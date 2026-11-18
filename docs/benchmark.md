@@ -1,6 +1,6 @@
 # Rule attachment case study
 
-The existing Threshold illustration cites a **10,482 → 54** token footprint. The original before/after rule files and paths were unavailable during this build, so that figure is pending reproduction with the pinned tokenizer. Publish it as a verified case study only after recovering the original inputs and recording the measured results.
+The existing Threshold illustration cites a **10,482 → 54** token footprint. The archived site labels the example as `app/(marketing)/hero.tsx` and embeds a `react-ui.mdc` snippet. Scanning that snippet as a tracked rule with a terminal newline measured 155 estimated body tokens for the hero path. The same rule contributed zero tokens to `src/db/schema.ts`. The archived comparison uses fixed display values and does not include the original global `.cursorrules`, so the original reduction is pending reproduction. Publish it as a verified case study only after recovering the original inputs and recording the measured results.
 
 ## Reproduction
 

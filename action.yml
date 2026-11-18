@@ -57,8 +57,8 @@ runs:
         if [[ ! -s "$THRESHOLD_REPORT" ]]; then
           exit 0
         fi
-        if grep -q '^No path-level automatic rule footprint changes\. "$THRESHOLD_REPORT" &&
-           ! grep -q '^### Warnings "$THRESHOLD_REPORT"; then
+        if grep -Fxq 'No path-level automatic rule footprint changes.' "$THRESHOLD_REPORT" &&
+           ! grep -Fxq '### Warnings' "$THRESHOLD_REPORT"; then
           exit 0
         fi
         if [[ $(wc -c < "$THRESHOLD_REPORT") -gt 60000 ]]; then
