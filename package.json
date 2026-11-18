@@ -1,0 +1,27 @@
+{
+  "name": "threshold-cli",
+  "version": "0.1.0",
+  "type": "module",
+  "description": "Audit Cursor project rules and review token footprint changes.",
+  "license": "Apache-2.0",
+  "bin": {
+    "threshold": "threshold.mjs"
+  },
+  "engines": {
+    "node": "^20.0.0 || >=22"
+  },
+  "files": [
+    "threshold.mjs",
+    "README.md",
+    "LICENSE",
+    "NOTICE"
+  ],
+  "scripts": {
+    "test": "node --test"
+  },
+  "dependencies": {
+    "js-tiktoken": "1.0.21",
+    "minimatch": "11.0.9",
+    "yaml": "2.8.3"
+  }
+}

@@ -1,0 +1,68 @@
+name: Threshold
+description: Compare static Cursor rule footprints across a pull request.
+inputs:
+  base:
+    description: Base Git ref available in the checked-out repository
+    required: true
+  head:
+    description: Head Git ref available in the checked-out repository
+    default: HEAD
+  budget:
+    description: Estimated automatic instruction tokens allowed per path
+    default: '2000'
+  fail-on-regression:
+    description: Fail only when a path newly exceeds the budget
+    default: 'false'
+  comment-token:
+    description: Optional GitHub token with pull-request write access for trusted same-repository PRs
+    default: ''
+  working-directory:
+    description: Git checkout to analyze
+    default: '.'
+outputs:
+  report:
+    description: Path to the Markdown report in RUNNER_TEMP
+    value: ${{ steps.compare.outputs.report }}
+runs:
+  using: composite
+  steps:
+    - shell: bash
+      run: npm ci --ignore-scripts --prefix "$GITHUB_ACTION_PATH"
+    - id: compare
+      shell: bash
+      working-directory: ${{ inputs.working-directory }}
+      env:
+        THRESHOLD_BASE: ${{ inputs.base }}
+        THRESHOLD_HEAD: ${{ inputs.head }}
+        THRESHOLD_BUDGET: ${{ inputs.budget }}
+        THRESHOLD_FAIL: ${{ inputs.fail-on-regression }}
+      run: |
+        report=$(mktemp "$RUNNER_TEMP/threshold.XXXXXXXX.md")
+        echo "report=$report" >> "$GITHUB_OUTPUT"
+        flags=()
+        if [[ "$THRESHOLD_FAIL" == "true" ]]; then
+          flags+=(--fail-on-regression)
+        fi
+        node "$GITHUB_ACTION_PATH/threshold.mjs" diff \
+          --base "$THRESHOLD_BASE" --head "$THRESHOLD_HEAD" \
+          --budget "$THRESHOLD_BUDGET" "${flags[@]}" | tee "$report"
+    - name: Publish PR comment
+      if: ${{ !cancelled() && steps.compare.outputs.report != '' && inputs.comment-token != '' && github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository }}
+      shell: bash
+      env:
+        GH_TOKEN: ${{ inputs.comment-token }}
+        THRESHOLD_REPORT: ${{ steps.compare.outputs.report }}
+        THRESHOLD_PR: ${{ github.event.pull_request.number }}
+      run: |
+        if [[ ! -s "$THRESHOLD_REPORT" ]]; then
+          exit 0
+        fi
+        if grep -q '^No path-level automatic rule footprint changes\. "$THRESHOLD_REPORT" &&
+           ! grep -q '^### Warnings "$THRESHOLD_REPORT"; then
+          exit 0
+        fi
+        if [[ $(wc -c < "$THRESHOLD_REPORT") -gt 60000 ]]; then
+          echo 'Threshold report is too large for a PR comment. See the job summary.'
+          exit 0
+        fi
+        gh pr comment "$THRESHOLD_PR" --repo "$GITHUB_REPOSITORY" --body-file "$THRESHOLD_REPORT"
