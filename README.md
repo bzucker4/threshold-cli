@@ -2,6 +2,16 @@
 
 Threshold shows which Cursor rules apply across your repo and flags pull requests that add instruction overhead where you didn’t expect it.
 
+## Quick demo
+
+From a checkout of this repository, run:
+
+```sh
+bash examples/quick-demo.sh
+```
+
+The demo creates a temporary Git repository and runs the published CLI. It changes a rule from always applied to `src/**/*.ts` while preserving the rule body. The documentation path goes from **26 → 0** estimated rule tokens, and the TypeScript path stays at **26**. This is a reproducible fixture for rule scoping.
+
 ## Run locally
 
 Requires Git and Node.js 20 or 22+. Run from any Git repository:
