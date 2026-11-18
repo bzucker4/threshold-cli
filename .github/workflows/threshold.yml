@@ -26,3 +26,4 @@ jobs:
         with:
           base: ${{ github.event.pull_request.base.sha }}
           comment-token: ${{ github.token }}
+          fail-on-regression: 'true'
