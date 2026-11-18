@@ -4,14 +4,14 @@ Threshold shows which Cursor rules apply across your repo and flags pull request
 
 ## Run locally
 
-Requires Git and Node.js 20 or 22+. From this checkout, install with `npm ci --ignore-scripts`. From any Git repository:
+Requires Git and Node.js 20 or 22+. Run from any Git repository:
 
 ```sh
-npx --yes --package ~/threshold-cli threshold scan --path src/index.ts
-npx --yes --package ~/threshold-cli threshold diff --base origin/main
+npx --yes --package https://github.com/bzucker4/threshold-cli/releases/download/v0.1.0/threshold-cli-0.1.0.tgz threshold scan --path src/index.ts
+npx --yes --package https://github.com/bzucker4/threshold-cli/releases/download/v0.1.0/threshold-cli-0.1.0.tgz threshold diff --base origin/main
 ```
 
-Use the filesystem path to this checkout or a packed tarball until a package release is available. Use `--format json` for complete machine-readable results, `--budget N` to set the per-path budget (default 2,000), and `--max-paths N` to limit the Markdown table. Exit codes are 0 for a completed warning-mode scan, 1 for an opted-in new budget breach, and 2 for a command error.
+Use `--format json` for complete machine-readable results, `--budget N` to set the per-path budget (default 2,000), and `--max-paths N` to limit the Markdown table. Exit codes are 0 for a completed warning-mode scan, 1 for an opted-in new budget breach, and 2 for a command error.
 
 ### What is counted
 
@@ -30,10 +30,10 @@ The scanner flags unresolved path-like `@file` references against tracked files,
 
 Use a full Git checkout and Node.js 22. Run on every PR so the check can return success when no footprint changes. The default is a read-only job summary with an explicit no-op or a path-by-path delta. The example in `.github/workflows/threshold.yml` compares the PR base SHA to GitHub's checked-out merge commit.
 
-After hosting the action, use the following step in a `pull_request` job after checkout and Node setup. Replace the repository and ref with the published location and full commit SHA.
+Use the following step in a `pull_request` job after checkout and Node setup. For immutable pinning, replace the version tag with the full release commit SHA.
 
 ```yaml
-- uses: YOUR_ORG/threshold-cli@FULL_COMMIT_SHA
+- uses: bzucker4/threshold-cli@v0.1.0
   with:
     base: ${{ github.event.pull_request.base.sha }}
     budget: '2000'
