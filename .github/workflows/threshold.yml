@@ -5,6 +5,7 @@ on:
     branches: [main]
 permissions:
   contents: read
+  pull-requests: write
 jobs:
   threshold:
     runs-on: ubuntu-latest
@@ -24,3 +25,4 @@ jobs:
         uses: ./
         with:
           base: ${{ github.event.pull_request.base.sha }}
+          comment-token: ${{ github.token }}
